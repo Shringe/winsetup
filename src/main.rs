@@ -8,9 +8,19 @@ fn main() {
     let args = cli::Args::parse();
     println!("{:#?}", args);
 
-    println!("Installing scoop...");
-    if !args.dryrun {
-        scoop::install_scoop();
+    match args.mode {
+        cli::Mode::Install => {
+            println!("Installing scoop...");
+            scoop::install_scoop();
+
+            println!("Installing programs...");
+            scoop::install_programs();
+        }
+
+        cli::Mode::Uninstall => {
+            println!("Uninstalling scoop and all programs...");
+            scoop::uninstall_scoop();
+        }
     }
 
     println!("Success! Program will end in 3 seconds");

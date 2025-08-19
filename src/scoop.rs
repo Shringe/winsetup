@@ -1,8 +1,8 @@
-use std::env;
-use std::fs;
 use std::process::Command;
 
-pub fn scoop_cmd(args: &Vec<String>) -> String {
+const PROGRAMS: [&str; 1] = ["neovim"];
+
+fn scoop_cmd(args: &Vec<&str>) -> String {
     let out = Command::new("scoop")
         .args(args)
         .output()
@@ -19,4 +19,16 @@ pub fn install_scoop() {
             "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
         ])
         .status();
+}
+
+pub fn uninstall_scoop() {
+    let args = vec!["uninstall", "scoop"];
+    scoop_cmd(&args);
+}
+
+pub fn install_programs() {
+    for p in PROGRAMS {
+        let args = vec!["install", p];
+        scoop_cmd(&args);
+    }
 }
