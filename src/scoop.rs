@@ -3,7 +3,10 @@ use std::process::Command;
 const PROGRAMS: [&str; 1] = ["neovim"];
 
 fn scoop_cmd(args: &Vec<&str>) -> String {
-    let out = Command::new("scoop")
+    let out = Command::new("powershell")
+        // .arg("-NoProfile")
+        .arg("-Command")
+        .arg("scoop")
         .args(args)
         .output()
         .expect("Couldn't parse scoop");
