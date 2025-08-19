@@ -26,6 +26,9 @@ fn main() {
     println!("Installing scoop...");
     scoop::install_scoop();
 
+    println!("Adding buckets...");
+    scoop::add_buckets();
+
     println!("Installing programs...");
     scoop::install_programs();
 

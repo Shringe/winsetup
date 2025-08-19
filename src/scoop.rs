@@ -1,6 +1,15 @@
 use std::process::Command;
 
-const PROGRAMS: [&str; 1] = ["neovim"];
+const PROGRAMS: [&str; 6] = [
+    "neovim",
+    "thunderbird",
+    "zen-browser",
+    "prismlauncher",
+    "alacritty",
+    "python",
+];
+
+const BUCKETS: [&str; 3] = ["main", "games", "extras"];
 
 fn scoop_cmd(args: &Vec<&str>) -> String {
     let out = Command::new("powershell")
@@ -22,6 +31,13 @@ pub fn install_scoop() {
             "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
         ])
         .status();
+}
+
+pub fn add_buckets() {
+    for b in BUCKETS {
+        let args = vec!["bucket", "add", b];
+        scoop_cmd(&args);
+    }
 }
 
 pub fn uninstall_scoop() {
