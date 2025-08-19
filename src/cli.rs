@@ -4,5 +4,5 @@ use clap::Parser;
 #[command(version, about, long_about = None)]
 pub struct Args {
     #[arg(long)]
-    dryrun: bool,
+    pub dryrun: bool,
 }
