@@ -1,8 +1,6 @@
 use colored::Colorize;
 use std::process::Command;
 
-use crate::cli;
-
 pub const GAME_PROGRAMS: [&str; 3] = ["games/prismlauncher", "games/steam", "extras/discord"];
 pub const GAME_BUCKETS: [&str; 2] = ["games", "extras"];
 
@@ -16,15 +14,15 @@ pub const ACADEMIC_BUCKETS: [&str; 1] = ["extras"];
 pub const PROGRAMMING_PROGRAMS: [&str; 3] = ["main/neovim", "main/python", "extras/alacritty"];
 pub const PROGRAMMING_BUCKETS: [&str; 2] = ["main", "extras"];
 
-pub struct Scoop<'a> {
-    pub cmd_args: &'a cli::Args,
+pub struct Scoop {
+    pub dryrun: bool,
 }
 
-impl Scoop<'_> {
+impl Scoop {
     /// Just executes the given scoop cmd, without printing any info
     /// Largely a helper method for other cmd methods
     fn execute_cmd(&self, args: &Vec<&str>) {
-        if !self.cmd_args.dryrun {
+        if !self.dryrun {
             let _ = Command::new("powershell")
                 .arg("-Command")
                 .arg("scoop")
@@ -46,7 +44,7 @@ impl Scoop<'_> {
     }
 
     pub fn install(&self) {
-        if self.cmd_args.dryrun {
+        if self.dryrun {
             println!("<Scoop installation command>");
         } else {
             let _ = Command::new("powershell")

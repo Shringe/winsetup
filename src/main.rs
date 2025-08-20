@@ -1,8 +1,6 @@
-use clap::Parser;
 use scoop as scoop_root;
 use std::{io, process::exit, thread, time};
 
-mod cli;
 mod scoop;
 
 const DIVIDER_WIDTH: usize = 20;
@@ -44,19 +42,12 @@ fn finish_program() -> ! {
 }
 
 fn main() {
-    let args = cli::Args::parse();
-    if args.dryrun {
-        println!("{:#?}", args);
-    }
-
     let answer = prompt_options();
-    if args.dryrun {
-        println!("Input: {}", answer);
-    }
+    println!("Input: {}", answer);
 
     print_divider();
 
-    let scoop = scoop::Scoop { cmd_args: &args };
+    let scoop = scoop::Scoop { dryrun: false };
 
     if answer == "remove" {
         println!("Uninstalling scoop and all software...");
