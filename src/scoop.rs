@@ -20,7 +20,7 @@ pub struct Scoop<'a> {
 }
 
 impl Scoop<'_> {
-    fn scoop_cmd(&self, args: &Vec<&str>) {
+    fn cmd(&self, args: &Vec<&str>) {
         if self.cmd_args.dryrun {
             println!("> scoop {}", args.join(" "));
         } else {
@@ -33,7 +33,11 @@ impl Scoop<'_> {
         }
     }
 
-    pub fn install_scoop(&self) {
+    pub fn uninstall(&self) {
+        self.cmd(&vec!["uninstall", "scoop"]);
+    }
+
+    pub fn install(&self) {
         if self.cmd_args.dryrun {
             println!("<Scoop installation command>");
         } else {
@@ -46,22 +50,22 @@ impl Scoop<'_> {
                 .status();
         }
 
-        self.scoop_cmd(&vec!["install", "git"]);
+        self.cmd(&vec!["install", "git"]);
     }
 
-    pub fn update_scoop(&self) {
-        self.scoop_cmd(&vec!["update"]);
+    pub fn update(&self) {
+        self.cmd(&vec!["update"]);
     }
 
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
         let mut cmd = vec!["buckets", "add"];
         cmd.extend(buckets);
-        self.scoop_cmd(&cmd);
+        self.cmd(&cmd);
     }
 
     pub fn add_programs(&self, programs: &Vec<&str>) {
         let mut cmd = vec!["install"];
         cmd.extend(programs);
-        self.scoop_cmd(&cmd);
+        self.cmd(&cmd);
     }
 }

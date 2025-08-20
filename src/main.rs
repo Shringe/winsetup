@@ -1,6 +1,6 @@
 use clap::Parser;
 use scoop as scoop_root;
-use std::{io, thread, time};
+use std::{io, process::exit, thread, time};
 
 mod cli;
 mod scoop;
@@ -11,11 +11,13 @@ const DIVIDER_SYMBOL: &str = "=";
 fn prompt_options() -> String {
     let text = "Type a number for each option to perform.\n\
         If you want both [1] and [2], then type 12.\n\
+        If unsure, just hit enter and it will default to 1234.\n\
          - [1] Install scoop\n\
          - [2] Update scoop and programs\n\
          - [3] Install games\n\
          - [4] Install academic tools\n\
          - [5] Install programming tools\n\
+         - [remove] Uninstall everything\n\
         Type your answer below then hit enter:";
     println!("{}", text);
 
@@ -24,12 +26,20 @@ fn prompt_options() -> String {
         .read_line(&mut input)
         .expect("Failed to read input");
 
-    input
+    input.trim().to_lowercase()
 }
 
 fn print_divider() {
     let divider = DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH);
     println!("{}", divider);
+}
+
+fn finish_program() -> ! {
+    print_divider();
+    println!("Success! Program will end in 3 seconds");
+    let pause = time::Duration::from_secs(3);
+    thread::sleep(pause);
+    exit(1);
 }
 
 fn main() {
@@ -46,6 +56,13 @@ fn main() {
     print_divider();
 
     let scoop = scoop::Scoop { cmd_args: &args };
+
+    if answer == "remove" {
+        println!("Uninstalling scoop and all software...");
+        scoop.uninstall();
+        finish_program();
+    }
+
     let mut buckets = Vec::new();
     let mut programs = Vec::new();
 
@@ -70,13 +87,13 @@ fn main() {
     if answer.contains('1') {
         print_divider();
         println!("Installing scoop if it's not available...");
-        scoop.install_scoop();
+        scoop.install();
         print_divider();
     }
 
     if answer.contains('2') {
         println!("Updating scoop if it's available...");
-        scoop.update_scoop();
+        scoop.update();
         print_divider();
     }
 
@@ -86,11 +103,6 @@ fn main() {
 
     println!("Installing all programs...");
     scoop.add_programs(&programs);
-    print_divider();
 
-    println!("Success! Program will end in 3 seconds");
-    let pause = time::Duration::from_secs(3);
-    if !args.dryrun {
-        thread::sleep(pause);
-    }
+    finish_program();
 }
