@@ -21,15 +21,13 @@ pub struct Scoop<'a> {
 
 impl Scoop<'_> {
     fn cmd(&self, args: &Vec<&str>) {
-        if self.cmd_args.dryrun {
-            println!("> scoop {}", args.join(" "));
-        } else {
+        println!("> scoop {}", args.join(" "));
+        if !self.cmd_args.dryrun {
             let _ = Command::new("powershell")
                 .arg("-Command")
                 .arg("scoop")
                 .args(args)
-                .output()
-                .expect("Couldn't parse scoop");
+                .spawn();
         }
     }
 
@@ -47,7 +45,7 @@ impl Scoop<'_> {
                     "-Command",
                     "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
                 ])
-                .status();
+                .spawn();
         }
 
         self.cmd(&vec!["install", "git"]);
