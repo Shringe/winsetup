@@ -14,6 +14,9 @@ pub const ACADEMIC_BUCKETS: [&str; 1] = ["extras"];
 pub const PROGRAMMING_PROGRAMS: [&str; 3] = ["main/neovim", "main/python", "extras/alacritty"];
 pub const PROGRAMMING_BUCKETS: [&str; 2] = ["main", "extras"];
 
+pub const PERSONAL_PROGRAMS: [&str; 1] = ["extras/kanata"];
+pub const PERSONAL_BUCKETS: [&str; 1] = ["extras"];
+
 pub struct Scoop {
     pub dryrun: bool,
 }

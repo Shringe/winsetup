@@ -1,24 +1,28 @@
 use scoop as scoop_root;
 use std::{io, process::exit, thread, time};
 
+mod config;
 mod scoop;
 
 const DIVIDER_WIDTH: usize = 20;
 const DIVIDER_SYMBOL: &str = "=";
 
 fn prompt_options() -> String {
-    let text = "Type a number for each option to perform.\n\
+    let warning = "The first time running this program, you must select 1, and then run this program again.\n\
+        This will set everything else up for installation.\n";
+
+    let body = "Type a number for each option to perform.\n\
         If you want both [1] and [2], then type 12.\n\
-        The first time arount you MUST only type 1.\n\
-        Afterwards you can choose the software you want.\n\
          - [1] Install scoop\n\
          - [2] Update scoop and programs\n\
          - [3] Install games\n\
          - [4] Install academic tools\n\
          - [5] Install programming tools\n\
+         - [6] Install personal configuration (not recommended)\n\
          - [remove] Uninstall everything\n\
         Type your answer below then hit enter:";
-    println!("{}", text);
+
+    println!("{}\n{}\n{}", warning, make_divider(), body);
 
     let mut input = String::new();
     io::stdin()
@@ -28,9 +32,12 @@ fn prompt_options() -> String {
     input.trim().to_lowercase()
 }
 
+fn make_divider() -> String {
+    DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH)
+}
+
 fn print_divider() {
-    let divider = DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH);
-    println!("{}", divider);
+    println!("{}", make_divider());
 }
 
 fn finish_program() -> ! {
@@ -75,6 +82,13 @@ fn main() {
         println!("Preparing to install programming software...");
         buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
         programs.extend(scoop_root::PROGRAMMING_PROGRAMS);
+    }
+
+    if answer.contains('6') {
+        println!("Setting up config...");
+        buckets.extend(scoop_root::PERSONAL_BUCKETS);
+        programs.extend(scoop_root::PERSONAL_PROGRAMS);
+        config::install(dryrun);
     }
 
     print_divider();
