@@ -70,9 +70,8 @@ impl Scoop {
     }
 
     pub fn add_programs(&self, programs: &Vec<&str>) {
-        for p in programs {
-            let cmd = vec!["install", p];
-            self.cmd_ok(&cmd);
-        }
+        let mut cmd = vec!["install"];
+        cmd.extend(programs);
+        self.cmd_ok(&cmd);
     }
 }
