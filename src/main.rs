@@ -26,7 +26,13 @@ fn prompt_options() -> String {
         .read_line(&mut input)
         .expect("Failed to read input");
 
-    input.trim().to_lowercase()
+    let response = input.trim().to_lowercase();
+    if response.is_empty() {
+        println!("Defaulting to 1234");
+        "1234".to_string()
+    } else {
+        response
+    }
 }
 
 fn print_divider() {
