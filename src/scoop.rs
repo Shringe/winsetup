@@ -1,12 +1,13 @@
 use std::process::Command;
 
-const PROGRAMS: [&str; 6] = [
+const PROGRAMS: [&str; 7] = [
     "neovim",
+    "python",
+    "alacritty",
     "thunderbird",
     "zen-browser",
+    "libreoffice",
     "prismlauncher",
-    "alacritty",
-    "python",
 ];
 
 const BUCKETS: [&str; 3] = ["main", "games", "extras"];
