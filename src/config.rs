@@ -29,8 +29,28 @@ fn init_recursive(from: &Dir<'_>, to: &PathBuf) -> Result<()> {
     Ok(())
 }
 
+fn get_startup_folder() -> Option<PathBuf> {
+    dirs::data_dir().map(|mut path| {
+        path.push("Microsoft");
+        path.push("Windows");
+        path.push("Start Menu");
+        path.push("Programs");
+        path.push("Startup");
+        path
+    })
+}
+
+#[cfg(windows)]
+fn create_lnk(from: &PathBuf, to: &PathBuf) {
+    use mslnk;
+    let sl = mslnk::ShellLink::new(from).unwrap();
+    sl.create_lnk(to).unwrap();
+}
+
+#[cfg(not(windows))]
+fn create_lnk(_from: &PathBuf, _to: &PathBuf) {}
+
 /// Instantializes configuration
-/// TODO, link winsetup_path/autostart.bat to the autostart directory
 pub fn install(dryrun: bool) {
     let winsetup_path = dirs::home_dir()
         .expect("Could not find home directory")
@@ -50,5 +70,16 @@ pub fn install(dryrun: bool) {
     } else {
         fs::create_dir(&winsetup_path).expect("Couldn't create winsetup directory");
         init_recursive(&DEFAULT_CONFIG, &winsetup_path).expect("Couldn't instantialize config");
+    }
+
+    let from = winsetup_path.join("autostart.bat");
+    let to = get_startup_folder().unwrap().join("autostart.lnk");
+
+    if !to.exists() {
+        if dryrun {
+            println!("<Creating shortcut {} -> {}>", from.display(), to.display());
+        } else {
+            create_lnk(&from, &to);
+        }
     }
 }
