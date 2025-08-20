@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::process::Command;
 
 use crate::cli;
@@ -32,15 +33,12 @@ impl Scoop<'_> {
         }
     }
 
-    fn cmd(&self, args: &Vec<&str>) {
-        println!("> scoop {}", args.join(" "));
-        self.execute_cmd(args);
-    }
-
     fn cmd_ok(&self, args: &Vec<&str>) {
-        print!("> scoop {}...", args.join(" "));
+        let text = format!("> scoop {}", args.join(" "));
+        print!("{}", text.magenta());
+        print!("...");
         self.execute_cmd(args);
-        println!("OK");
+        println!("{}", "OK".green());
     }
 
     pub fn uninstall(&self) {
@@ -66,7 +64,7 @@ impl Scoop<'_> {
     }
 
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
-        self.cmd(&vec!["install", "git"]);
+        self.cmd_ok(&vec!["install", "git"]);
         for b in buckets {
             let cmd = vec!["bucket", "add", b];
             self.cmd_ok(&cmd);
