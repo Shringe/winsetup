@@ -47,7 +47,8 @@ fn main() {
 
     print_divider();
 
-    let scoop = scoop::Scoop { dryrun: false };
+    let dryrun = cfg!(debug_assertions);
+    let scoop = scoop::Scoop { dryrun };
 
     if answer == "remove" {
         println!("Uninstalling scoop and all software...");
