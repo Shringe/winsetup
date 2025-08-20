@@ -1,5 +1,5 @@
 use clap::Parser;
-use scoop::Scoop;
+use scoop as scoop_root;
 use std::{io, thread, time};
 
 mod cli;
@@ -45,10 +45,26 @@ fn main() {
 
     print_divider();
 
-    let scoop = Scoop { cmd_args: &args };
+    let scoop = scoop::Scoop { cmd_args: &args };
 
     if answer.contains('1') {
         println!("Installing scoop if it's not available...");
+
+        let mut buckets = Vec::new();
+
+        if answer.contains('3') {
+            buckets.extend(scoop_root::GAME_BUCKETS);
+        }
+        if answer.contains('4') {
+            buckets.extend(scoop_root::ACADEMIC_BUCKETS);
+        }
+        if answer.contains('5') {
+            buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
+        }
+
+        scoop.install_scoop();
+        scoop.add_buckets(&buckets);
+
         print_divider();
     }
     if answer.contains('2') {

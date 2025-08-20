@@ -2,17 +2,18 @@ use std::process::Command;
 
 use crate::cli;
 
-const PROGRAMS: [&str; 7] = [
-    "neovim",
-    "python",
-    "alacritty",
-    "thunderbird",
-    "zen-browser",
-    "libreoffice",
-    "prismlauncher",
-];
+pub const GAME_PROGRAMS: [&str; 2] = ["games/prismlauncher", "games/steam"];
+pub const GAME_BUCKETS: [&str; 1] = ["games"];
 
-const BUCKETS: [&str; 3] = ["main", "games", "extras"];
+pub const ACADEMIC_PROGRAMS: [&str; 3] = [
+    "extras/zen-browser",
+    "extras/thunderbird",
+    "extras/libreoffice",
+];
+pub const ACADEMIC_BUCKETS: [&str; 1] = ["extras"];
+
+pub const PROGRAMMING_PROGRAMS: [&str; 3] = ["main/neovim", "main/python", "extras/alacritty"];
+pub const PROGRAMMING_BUCKETS: [&str; 2] = ["main", "extras"];
 
 pub struct Scoop<'a> {
     pub cmd_args: &'a cli::Args,
@@ -23,7 +24,7 @@ impl Scoop<'_> {
         if self.cmd_args.dryrun {
             println!("> scoop {}", args.join(" "));
         } else {
-            let out = Command::new("powershell")
+            let _ = Command::new("powershell")
                 .arg("-Command")
                 .arg("scoop")
                 .args(args)
@@ -46,22 +47,12 @@ impl Scoop<'_> {
         }
     }
 
-    pub fn add_buckets(&self) {
-        for b in BUCKETS {
-            let args = vec!["bucket", "add", b];
-            self.scoop_cmd(&args);
-        }
-    }
+    pub fn add_buckets(&self, buckets: &Vec<&str>) {
+        // Git needed for buckets
+        self.scoop_cmd(&vec!["install", "git"]);
 
-    pub fn uninstall_scoop(&self) {
-        let args = vec!["uninstall", "scoop"];
-        self.scoop_cmd(&args);
-    }
-
-    pub fn install_programs(&self) {
-        for p in PROGRAMS {
-            let args = vec!["install", p];
-            self.scoop_cmd(&args);
-        }
+        let mut buckets_cmd = vec!["buckets", "add"];
+        buckets_cmd.extend(buckets);
+        self.scoop_cmd(&buckets_cmd);
     }
 }
