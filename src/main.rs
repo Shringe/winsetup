@@ -11,7 +11,8 @@ const DIVIDER_SYMBOL: &str = "=";
 fn prompt_options() -> String {
     let text = "Type a number for each option to perform.\n\
         If you want both [1] and [2], then type 12.\n\
-        If unsure, just hit enter and it will default to 1234.\n\
+        The first time arount you MUST only type 1.\n\
+        Afterwards you can choose the software you want.\n\
          - [1] Install scoop\n\
          - [2] Update scoop and programs\n\
          - [3] Install games\n\
@@ -26,13 +27,7 @@ fn prompt_options() -> String {
         .read_line(&mut input)
         .expect("Failed to read input");
 
-    let response = input.trim().to_lowercase();
-    if response.is_empty() {
-        println!("Defaulting to 1234");
-        "1234".to_string()
-    } else {
-        response
-    }
+    input.trim().to_lowercase()
 }
 
 fn print_divider() {
@@ -90,8 +85,9 @@ fn main() {
         programs.extend(scoop_root::PROGRAMMING_PROGRAMS);
     }
 
+    print_divider();
+
     if answer.contains('1') {
-        print_divider();
         println!("Installing scoop if it's not available...");
         scoop.install();
         print_divider();
@@ -102,6 +98,11 @@ fn main() {
         scoop.update();
         print_divider();
     }
+
+    buckets.sort();
+    buckets.dedup();
+    programs.sort();
+    programs.dedup();
 
     println!("Installing all buckets...");
     scoop.add_buckets(&buckets);

@@ -2,8 +2,8 @@ use std::process::Command;
 
 use crate::cli;
 
-pub const GAME_PROGRAMS: [&str; 2] = ["games/prismlauncher", "games/steam"];
-pub const GAME_BUCKETS: [&str; 1] = ["games"];
+pub const GAME_PROGRAMS: [&str; 3] = ["games/prismlauncher", "games/steam", "extras/discord"];
+pub const GAME_BUCKETS: [&str; 2] = ["games", "extras"];
 
 pub const ACADEMIC_PROGRAMS: [&str; 3] = [
     "extras/zen-browser",
@@ -27,7 +27,7 @@ impl Scoop<'_> {
                 .arg("-Command")
                 .arg("scoop")
                 .args(args)
-                .spawn();
+                .output();
         }
     }
 
@@ -41,14 +41,12 @@ impl Scoop<'_> {
         } else {
             let _ = Command::new("powershell")
                 .args([
-                    "-NoProfile",
+                    // "-NoProfile",
                     "-Command",
                     "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
                 ])
-                .spawn();
+                .output();
         }
-
-        self.cmd(&vec!["install", "git"]);
     }
 
     pub fn update(&self) {
@@ -56,9 +54,11 @@ impl Scoop<'_> {
     }
 
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
-        let mut cmd = vec!["buckets", "add"];
-        cmd.extend(buckets);
-        self.cmd(&cmd);
+        self.cmd(&vec!["install", "git"]);
+        for b in buckets {
+            let cmd = vec!["bucket", "add", b];
+            self.cmd(&cmd);
+        }
     }
 
     pub fn add_programs(&self, programs: &Vec<&str>) {
