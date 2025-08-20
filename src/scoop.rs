@@ -20,8 +20,9 @@ pub struct Scoop<'a> {
 }
 
 impl Scoop<'_> {
-    fn cmd(&self, args: &Vec<&str>) {
-        println!("> scoop {}", args.join(" "));
+    /// Just executes the given scoop cmd, without printing any info
+    /// Largely a helper method for other cmd methods
+    fn execute_cmd(&self, args: &Vec<&str>) {
         if !self.cmd_args.dryrun {
             let _ = Command::new("powershell")
                 .arg("-Command")
@@ -31,8 +32,19 @@ impl Scoop<'_> {
         }
     }
 
+    fn cmd(&self, args: &Vec<&str>) {
+        println!("> scoop {}", args.join(" "));
+        self.execute_cmd(args);
+    }
+
+    fn cmd_ok(&self, args: &Vec<&str>) {
+        print!("> scoop {}...", args.join(" "));
+        self.execute_cmd(args);
+        println!("OK");
+    }
+
     pub fn uninstall(&self) {
-        self.cmd(&vec!["uninstall", "scoop"]);
+        self.cmd_ok(&vec!["uninstall", "scoop"]);
     }
 
     pub fn install(&self) {
@@ -50,20 +62,21 @@ impl Scoop<'_> {
     }
 
     pub fn update(&self) {
-        self.cmd(&vec!["update"]);
+        self.cmd_ok(&vec!["update"]);
     }
 
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
         self.cmd(&vec!["install", "git"]);
         for b in buckets {
             let cmd = vec!["bucket", "add", b];
-            self.cmd(&cmd);
+            self.cmd_ok(&cmd);
         }
     }
 
     pub fn add_programs(&self, programs: &Vec<&str>) {
-        let mut cmd = vec!["install"];
-        cmd.extend(programs);
-        self.cmd(&cmd);
+        for p in programs {
+            let cmd = vec!["install", p];
+            self.cmd_ok(&cmd);
+        }
     }
 }
