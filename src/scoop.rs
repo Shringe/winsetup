@@ -1,5 +1,7 @@
 use std::process::Command;
 
+use crate::cli;
+
 const PROGRAMS: [&str; 7] = [
     "neovim",
     "python",
@@ -12,43 +14,54 @@ const PROGRAMS: [&str; 7] = [
 
 const BUCKETS: [&str; 3] = ["main", "games", "extras"];
 
-fn scoop_cmd(args: &Vec<&str>) -> String {
-    let out = Command::new("powershell")
-        // .arg("-NoProfile")
-        .arg("-Command")
-        .arg("scoop")
-        .args(args)
-        .output()
-        .expect("Couldn't parse scoop");
-
-    String::from_utf8_lossy(&out.stdout).to_string()
+pub struct Scoop<'a> {
+    pub cmd_args: &'a cli::Args,
 }
 
-pub fn install_scoop() {
-    let _ = Command::new("powershell")
-        .args([
-            "-NoProfile",
-            "-Command",
-            "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
-        ])
-        .status();
-}
-
-pub fn add_buckets() {
-    for b in BUCKETS {
-        let args = vec!["bucket", "add", b];
-        scoop_cmd(&args);
+impl Scoop<'_> {
+    fn scoop_cmd(&self, args: &Vec<&str>) {
+        if self.cmd_args.dryrun {
+            println!("> scoop {}", args.join(" "));
+        } else {
+            let out = Command::new("powershell")
+                .arg("-Command")
+                .arg("scoop")
+                .args(args)
+                .output()
+                .expect("Couldn't parse scoop");
+        }
     }
-}
 
-pub fn uninstall_scoop() {
-    let args = vec!["uninstall", "scoop"];
-    scoop_cmd(&args);
-}
+    pub fn install_scoop(&self) {
+        if self.cmd_args.dryrun {
+            println!("<Scoop installation command>");
+        } else {
+            let _ = Command::new("powershell")
+                .args([
+                    "-NoProfile",
+                    "-Command",
+                    "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
+                ])
+                .status();
+        }
+    }
 
-pub fn install_programs() {
-    for p in PROGRAMS {
-        let args = vec!["install", p];
-        scoop_cmd(&args);
+    pub fn add_buckets(&self) {
+        for b in BUCKETS {
+            let args = vec!["bucket", "add", b];
+            self.scoop_cmd(&args);
+        }
+    }
+
+    pub fn uninstall_scoop(&self) {
+        let args = vec!["uninstall", "scoop"];
+        self.scoop_cmd(&args);
+    }
+
+    pub fn install_programs(&self) {
+        for p in PROGRAMS {
+            let args = vec!["install", p];
+            self.scoop_cmd(&args);
+        }
     }
 }
