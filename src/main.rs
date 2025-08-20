@@ -27,6 +27,23 @@ fn prompt_options() -> String {
     input
 }
 
+/// Returns all of the requested buckets
+fn costruct_buckets(answer: &String) -> Vec<&str> {
+    let mut buckets = Vec::new();
+
+    if answer.contains('3') {
+        buckets.extend(scoop_root::GAME_BUCKETS);
+    }
+    if answer.contains('4') {
+        buckets.extend(scoop_root::ACADEMIC_BUCKETS);
+    }
+    if answer.contains('5') {
+        buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
+    }
+
+    buckets
+}
+
 fn print_divider() {
     let divider = DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH);
     println!("{}", divider);
@@ -49,36 +66,27 @@ fn main() {
 
     if answer.contains('1') {
         println!("Installing scoop if it's not available...");
-
-        let mut buckets = Vec::new();
-
-        if answer.contains('3') {
-            buckets.extend(scoop_root::GAME_BUCKETS);
-        }
-        if answer.contains('4') {
-            buckets.extend(scoop_root::ACADEMIC_BUCKETS);
-        }
-        if answer.contains('5') {
-            buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
-        }
-
         scoop.install_scoop();
-        scoop.add_buckets(&buckets);
-
+        scoop.add_buckets(&costruct_buckets(&answer));
         print_divider();
     }
+
     if answer.contains('2') {
         println!("Updating scoop if it's available...");
+        scoop.update_scoop();
         print_divider();
     }
+
     if answer.contains('3') {
         println!("Installing games...");
         print_divider();
     }
+
     if answer.contains('4') {
         println!("Installing academic software...");
         print_divider();
     }
+
     if answer.contains('5') {
         println!("Installing programming software");
         print_divider();

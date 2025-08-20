@@ -47,6 +47,10 @@ impl Scoop<'_> {
         }
     }
 
+    pub fn update_scoop(&self) {
+        self.scoop_cmd(&vec!["update"]);
+    }
+
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
         // Git needed for buckets
         self.scoop_cmd(&vec!["install", "git"]);
