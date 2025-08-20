@@ -45,7 +45,7 @@ fn finish_program() -> ! {
     println!("Success! Program will end in 3 seconds");
     let pause = time::Duration::from_secs(3);
     thread::sleep(pause);
-    exit(1);
+    exit(0);
 }
 
 fn main() {
