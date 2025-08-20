@@ -27,23 +27,6 @@ fn prompt_options() -> String {
     input
 }
 
-/// Returns all of the requested buckets
-fn costruct_buckets(answer: &String) -> Vec<&str> {
-    let mut buckets = Vec::new();
-
-    if answer.contains('3') {
-        buckets.extend(scoop_root::GAME_BUCKETS);
-    }
-    if answer.contains('4') {
-        buckets.extend(scoop_root::ACADEMIC_BUCKETS);
-    }
-    if answer.contains('5') {
-        buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
-    }
-
-    buckets
-}
-
 fn print_divider() {
     let divider = DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH);
     println!("{}", divider);
@@ -63,11 +46,31 @@ fn main() {
     print_divider();
 
     let scoop = scoop::Scoop { cmd_args: &args };
+    let mut buckets = Vec::new();
+    let mut programs = Vec::new();
+
+    if answer.contains('3') {
+        println!("Preparing to install games...");
+        buckets.extend(scoop_root::GAME_BUCKETS);
+        programs.extend(scoop_root::GAME_PROGRAMS);
+    }
+
+    if answer.contains('4') {
+        println!("Preparing to install academic software...");
+        buckets.extend(scoop_root::ACADEMIC_BUCKETS);
+        programs.extend(scoop_root::ACADEMIC_PROGRAMS);
+    }
+
+    if answer.contains('5') {
+        println!("Preparing to install programming software...");
+        buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
+        programs.extend(scoop_root::PROGRAMMING_PROGRAMS);
+    }
 
     if answer.contains('1') {
+        print_divider();
         println!("Installing scoop if it's not available...");
         scoop.install_scoop();
-        scoop.add_buckets(&costruct_buckets(&answer));
         print_divider();
     }
 
@@ -77,20 +80,13 @@ fn main() {
         print_divider();
     }
 
-    if answer.contains('3') {
-        println!("Installing games...");
-        print_divider();
-    }
+    println!("Installing all buckets...");
+    scoop.add_buckets(&buckets);
+    print_divider();
 
-    if answer.contains('4') {
-        println!("Installing academic software...");
-        print_divider();
-    }
-
-    if answer.contains('5') {
-        println!("Installing programming software");
-        print_divider();
-    }
+    println!("Installing all programs...");
+    scoop.add_programs(&programs);
+    print_divider();
 
     println!("Success! Program will end in 3 seconds");
     let pause = time::Duration::from_secs(3);

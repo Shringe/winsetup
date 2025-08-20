@@ -54,8 +54,14 @@ impl Scoop<'_> {
     }
 
     pub fn add_buckets(&self, buckets: &Vec<&str>) {
-        let mut buckets_cmd = vec!["buckets", "add"];
-        buckets_cmd.extend(buckets);
-        self.scoop_cmd(&buckets_cmd);
+        let mut cmd = vec!["buckets", "add"];
+        cmd.extend(buckets);
+        self.scoop_cmd(&cmd);
+    }
+
+    pub fn add_programs(&self, programs: &Vec<&str>) {
+        let mut cmd = vec!["install"];
+        cmd.extend(programs);
+        self.scoop_cmd(&cmd);
     }
 }
