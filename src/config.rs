@@ -40,16 +40,6 @@ fn get_startup_folder() -> Option<PathBuf> {
     })
 }
 
-#[cfg(windows)]
-fn create_lnk(from: &PathBuf, to: &PathBuf) {
-    use mslnk;
-    let sl = mslnk::ShellLink::new(from).unwrap();
-    sl.create_lnk(to).unwrap();
-}
-
-#[cfg(not(windows))]
-fn create_lnk(_from: &PathBuf, _to: &PathBuf) {}
-
 /// Instantializes configuration
 pub fn install(dryrun: bool) {
     let winsetup_path = dirs::home_dir()
@@ -72,14 +62,21 @@ pub fn install(dryrun: bool) {
         init_recursive(&DEFAULT_CONFIG, &winsetup_path).expect("Couldn't instantialize config");
     }
 
-    let from = winsetup_path.join("autostart.bat");
-    let to = get_startup_folder().unwrap().join("autostart.lnk");
+    let autostart_path = get_startup_folder().unwrap();
+    let autostart_bat = winsetup_path.join("autostart.bat");
+    let autostart_vbs = autostart_path.join("winsetup.vbs");
+    let autostart_vbs_content = format!(
+        "CreateObject('Wscript.Shell').Run '{}', 0, True",
+        autostart_bat.display()
+    );
 
-    if !to.exists() {
-        if dryrun {
-            println!("<Creating shortcut {} -> {}>", from.display(), to.display());
-        } else {
-            create_lnk(&from, &to);
-        }
+    if dryrun {
+        println!(
+            "<Creating autostart.vbs script at {} with contents:\n{}\n>",
+            autostart_vbs.display(),
+            autostart_vbs_content
+        );
+    } else {
+        let _ = fs::write(&autostart_vbs, &autostart_vbs_content);
     }
 }
