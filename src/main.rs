@@ -42,11 +42,19 @@ fn print_divider() {
     println!("{}", make_divider());
 }
 
+#[cfg(not(windows))]
 fn finish_program() -> ! {
     print_divider();
     println!("Success! Program will end in 3 seconds");
     let pause = time::Duration::from_secs(3);
     thread::sleep(pause);
+    exit(0);
+}
+
+#[cfg(windows)]
+fn finish_program() -> ! {
+    print_divider();
+    press_btn_continue::wait("Success! Press any key to close this window...").unwrap();
     exit(0);
 }
 
