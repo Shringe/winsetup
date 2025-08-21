@@ -1,4 +1,5 @@
 use colored::{ColoredString, Colorize};
+use notify_rust::Notification;
 use scoop as scoop_root;
 use std::{io, process::exit, thread, time};
 
@@ -43,18 +44,28 @@ fn print_divider() {
 }
 
 #[cfg(not(windows))]
-fn finish_program() -> ! {
-    print_divider();
-    println!("Success! Program will end in 3 seconds");
+fn prompt_quit() {
+    println!("Success! Program will end in 3 seconds...");
     let pause = time::Duration::from_secs(3);
     thread::sleep(pause);
-    exit(0);
 }
 
 #[cfg(windows)]
+fn prompt_quit() {
+    press_btn_continue::wait("Success! Press any key to close this window...").unwrap();
+}
+
+fn notify_finished() {
+    let _ = Notification::new()
+        .summary("Winsetup is finished")
+        .body("You can now close Winsetup.")
+        .show();
+}
+
 fn finish_program() -> ! {
     print_divider();
-    press_btn_continue::wait("Success! Press any key to close this window...").unwrap();
+    notify_finished();
+    prompt_quit();
     exit(0);
 }
 
