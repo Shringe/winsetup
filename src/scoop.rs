@@ -39,7 +39,7 @@ impl Scoop {
         print!("{}", text.magenta());
         print!("...");
         self.execute_cmd(args);
-        println!("{}", "OK".green());
+        println!("{}", "OK".green().bold());
     }
 
     pub fn uninstall(&self) {

@@ -1,15 +1,17 @@
+use colored::{ColoredString, Colorize};
 use scoop as scoop_root;
 use std::{io, process::exit, thread, time};
 
 mod config;
 mod scoop;
+mod style;
 
 const DIVIDER_WIDTH: usize = 20;
 const DIVIDER_SYMBOL: &str = "=";
 
 fn prompt_options() -> String {
     let warning = "The first time running this program, you must select 1, and then run this program again.\n\
-        This will set everything else up for installation.\n";
+        This will set everything else up for installation.";
 
     let body = "Type a number for each option to perform.\n\
         If you want both [1] and [2], then type 12.\n\
@@ -32,8 +34,8 @@ fn prompt_options() -> String {
     input.trim().to_lowercase()
 }
 
-fn make_divider() -> String {
-    DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH)
+fn make_divider() -> ColoredString {
+    DIVIDER_SYMBOL.repeat(DIVIDER_WIDTH).blue().bold()
 }
 
 fn print_divider() {
@@ -50,16 +52,18 @@ fn finish_program() -> ! {
 
 fn main() {
     let answer = prompt_options();
-    println!("Input: {}", answer);
-
-    print_divider();
-
     let dryrun = cfg!(debug_assertions);
     let scoop = scoop::Scoop { dryrun };
     let config = config::Config::new(dryrun);
 
+    if dryrun {
+        println!("Input: {}", answer);
+    }
+
+    print_divider();
+
     if answer == "remove" {
-        println!("Uninstalling scoop and all software...");
+        status!("Uninstalling scoop and all software...");
         scoop.uninstall();
         config.uninstall();
         finish_program();
@@ -69,25 +73,25 @@ fn main() {
     let mut programs = Vec::new();
 
     if answer.contains('3') {
-        println!("Preparing to install games...");
+        status!("Preparing to install games...");
         buckets.extend(scoop_root::GAME_BUCKETS);
         programs.extend(scoop_root::GAME_PROGRAMS);
     }
 
     if answer.contains('4') {
-        println!("Preparing to install academic software...");
+        status!("Preparing to install academic software...");
         buckets.extend(scoop_root::ACADEMIC_BUCKETS);
         programs.extend(scoop_root::ACADEMIC_PROGRAMS);
     }
 
     if answer.contains('5') {
-        println!("Preparing to install programming software...");
+        status!("Preparing to install programming software...");
         buckets.extend(scoop_root::PROGRAMMING_BUCKETS);
         programs.extend(scoop_root::PROGRAMMING_PROGRAMS);
     }
 
     if answer.contains('6') {
-        println!("Setting up config...");
+        status!("Setting up config...");
         buckets.extend(scoop_root::PERSONAL_BUCKETS);
         programs.extend(scoop_root::PERSONAL_PROGRAMS);
         config.install();
@@ -96,13 +100,13 @@ fn main() {
     print_divider();
 
     if answer.contains('1') {
-        println!("Installing scoop if it's not available...");
+        status!("Installing scoop if it's not available...");
         scoop.install();
         print_divider();
     }
 
     if answer.contains('2') {
-        println!("Updating scoop if it's available...");
+        status!("Updating scoop if it's available...");
         scoop.update();
         print_divider();
     }
@@ -112,11 +116,11 @@ fn main() {
     programs.sort();
     programs.dedup();
 
-    println!("Installing all buckets...");
+    status!("Installing all buckets...");
     scoop.add_buckets(&buckets);
     print_divider();
 
-    println!("Installing all programs...");
+    status!("Installing all programs...");
     scoop.add_programs(&programs);
 
     finish_program();
