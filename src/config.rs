@@ -98,4 +98,33 @@ impl Config {
             let _ = fs::write(&self.autostart_vbs_path, &autostart_vbs_content);
         }
     }
+
+    /// Removes the winsetup folder and autostart script
+    pub fn uninstall(&self) {
+        if self.winsetup_path.exists() {
+            if self.dryrun {
+                println!("<Removing {}>", self.winsetup_path.display());
+            } else {
+                let _ = fs::remove_dir_all(&self.winsetup_path);
+            }
+        } else {
+            println!(
+                "{} doesn't exist, skipping removal",
+                self.winsetup_path.display()
+            );
+        }
+
+        if self.autostart_vbs_path.exists() {
+            if self.dryrun {
+                println!("<Removing {}>", self.autostart_vbs_path.display());
+            } else {
+                let _ = fs::remove_file(&self.autostart_vbs_path);
+            }
+        } else {
+            println!(
+                "{} doesn't exist, skipping removal",
+                self.autostart_vbs_path.display()
+            );
+        }
+    }
 }

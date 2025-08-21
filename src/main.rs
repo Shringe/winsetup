@@ -61,7 +61,7 @@ fn main() {
     if answer == "remove" {
         println!("Uninstalling scoop and all software...");
         scoop.uninstall();
-        // config::uninstall();
+        config.uninstall();
         finish_program();
     }
 
