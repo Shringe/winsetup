@@ -84,7 +84,7 @@ impl Config {
         }
 
         let autostart_vbs_content = format!(
-            "CreateObject('Wscript.Shell').Run '{}', 0, True",
+            "CreateObject(\"Wscript.Shell\").Run \"{}\", 0, True",
             self.winsetup_path.join("autostart.bat").display()
         );
 
