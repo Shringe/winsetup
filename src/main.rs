@@ -56,10 +56,12 @@ fn main() {
 
     let dryrun = cfg!(debug_assertions);
     let scoop = scoop::Scoop { dryrun };
+    let config = config::Config::new(dryrun);
 
     if answer == "remove" {
         println!("Uninstalling scoop and all software...");
         scoop.uninstall();
+        // config::uninstall();
         finish_program();
     }
 
@@ -88,7 +90,7 @@ fn main() {
         println!("Setting up config...");
         buckets.extend(scoop_root::PERSONAL_BUCKETS);
         programs.extend(scoop_root::PERSONAL_PROGRAMS);
-        config::install(dryrun);
+        config.install();
     }
 
     print_divider();
